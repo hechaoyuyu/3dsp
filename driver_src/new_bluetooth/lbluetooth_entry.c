@@ -265,7 +265,7 @@ void prt_time()
 
 static int hci_usb_open(struct hci_dev *hdev)
 {
-	void *devExt = hdev->driver_data;
+	void *devExt = hci_get_drvdata(hdev);
 
 	if (test_and_set_bit(HCI_RUNNING, &hdev->flags))
 	{   
@@ -283,7 +283,7 @@ static int hci_usb_open(struct hci_dev *hdev)
 	/* Try to be MASTER aggressively */
 	hdev->link_mode |= HCI_LM_MASTER;
 
-	Bluetooth_Adap_Init(hdev->driver_data);
+	Bluetooth_Adap_Init(hci_get_drvdata(hdev));
     
 	if(combodrv){
 		Bluetooth_Adap_Set_FirmVer(devExt);
@@ -296,7 +296,7 @@ static int hci_usb_close(struct hci_dev *hdev)
 {
 	void *devExt = NULL;
 
-	devExt = hdev->driver_data;
+	devExt = hci_get_drvdata(hdev);
 
 	if (!test_and_clear_bit(HCI_RUNNING, &hdev->flags)){
 		printk("%s: %s NOT Running\n", __FUNCTION__, hdev->name);    
@@ -325,7 +325,7 @@ static int hci_usb_send_frame(struct sk_buff *skb)
 {
 	int retval = 0;
 	struct hci_dev *hdev = (struct hci_dev *) skb->dev;
-	void	*devExt = hdev->driver_data;
+	void	*devExt = hci_get_drvdata(hdev);
     
 	if (!hdev) {
 		printk("%s: Frame for uknown device (hdev=NULL)\n", __FUNCTION__);
@@ -373,9 +373,9 @@ static int hci_usb_send_frame(struct sk_buff *skb)
 	return retval;
 }
 
-static void hci_usb_destruct(struct hci_dev *hdev)
+/*static void hci_usb_destruct(struct hci_dev *hdev)
 {
-}
+}*/
 
 static void hci_usb_notify(struct hci_dev *hdev, unsigned int evt)
 {
@@ -387,7 +387,7 @@ static int hci_usb_ioctl(struct hci_dev *hdev, unsigned int cmd, unsigned long a
 	struct dbg_usb_reg *u_reg = NULL;
 	int errcode = 0;
 
-	void *devExt = hdev->driver_data;
+	void *devExt = hci_get_drvdata(hdev);
 	
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
 	{
@@ -559,17 +559,17 @@ void *register_HCI_device(void *devExt)
 		goto end;
 	}
 
-	hdev->driver_data = devExt;
+	hci_set_drvdata(hdev, devExt);
 	SET_HCIDEV_DEV(hdev, &intf->dev);
 	hdev->open		= hci_usb_open;
 	hdev->close		= hci_usb_close;
 	hdev->flush		= hci_usb_flush;
 	hdev->send		= hci_usb_send_frame;
-	hdev->destruct	= hci_usb_destruct;
+	//hdev->destruct	= hci_usb_destruct;
 	hdev->notify		= hci_usb_notify;
 	hdev->ioctl		= hci_usb_ioctl;
     
-	hdev->owner = THIS_MODULE;
+	//hdev->owner = THIS_MODULE;
 
 	if (hci_register_dev(hdev) < 0) {
 		printk("%s: Can't register HCI device\n", __FUNCTION__);
@@ -604,8 +604,8 @@ void unregister_HCI_device(void *devExt)
 		goto end;
 	}
 	
-	if (hci_unregister_dev(hdev) < 0)
-		printk("%s: Can't unregister HCI device %s\n", __FUNCTION__, hdev->name);
+	hci_unregister_dev(hdev);
+	//printk("%s: Can't unregister HCI device %s\n", __FUNCTION__, hdev->name);
 
 	// Close Dev
 	Bluetooth_Adap_Close_Dev(devExt);
@@ -670,7 +670,7 @@ static int _bluetooth_usb_probe(struct usb_interface *intf, const struct usb_dev
 				ep->desc.bEndpointAddress & USB_DIR_IN ? " IN" : "OUT");
 	}
 
-	printk("%s: sc is %x\n", __FUNCTION__, (unsigned int)&syscall);
+	//printk("%s: sc is %x\n", __FUNCTION__, (unsigned int)&syscall);
 	b_syscall_set((PSYS_CALL)&syscall);
 
 
@@ -683,7 +683,7 @@ static int _bluetooth_usb_probe(struct usb_interface *intf, const struct usb_dev
 	usb_info.EP_bulkin_Rx = INDEX_EP_BULK_IN_DATA;
 	usb_info.EP_interrupt = INDEX_EP_INTR;
 
-	printk("%s: usb_info is %x\n", __FUNCTION__, (unsigned int)&usb_info);
+	//printk("%s: usb_info is %x\n", __FUNCTION__, (unsigned int)&usb_info);
 	if(NULL == (devExt= Bluetooth_Adap_Create((PUSB_INFO)&usb_info, udev, intf)))
 	{
 		printk("%s: Usb device Init failed \n",__FUNCTION__);
