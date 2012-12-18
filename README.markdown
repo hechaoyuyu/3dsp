@@ -1,6 +1,6 @@
 #Modified 3DSP driver source
 
-I tried to compile the 3DSP source available at [3DSP official page](http://www.3dsp.com.cn), but it didn't work with Ubuntu 11.04, so I made some changes in the code and it works :)
+I tried to compile the 3DSP source available at [3DSP official page](http://www.3dsp.com.cn), but it didn't work with Ubuntu 12.04, so I made some changes in the code and it works :)
 
 First, you should install all dependencies:
 
@@ -8,13 +8,13 @@ First, you should install all dependencies:
 
 With all dependencies satisfied, just clone this git repository and run Install\_3DSP.sh:
 
-    $ git clone http://github.com/reyiyo/3dsp.git
+    $ git clone http://github.com/hechaoyuyu/3dsp.git
     $ cd 3dsp
     $ sudo bash Install_3DSPUSB.sh
 
 If you don't use git, just download the source from Github, extract it and run Install\_3DSP.sh:
 
-    $ curl http://github.com/reyiyo/3dsp/tarball/master -o 3dsp.tar.gz
+    $ curl http://github.com/hechaoyuyu/3dsp/tarball/master -o 3dsp.tar.gz
     $ tar -xvzf 3dsp.tar.gz
     $ cd 3dsp
     $ sudo bash Install_3DSP.sh
